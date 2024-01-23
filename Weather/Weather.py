@@ -28,7 +28,6 @@ def display_weather(data):
     weather_str += f"Min Temperature: {data['main']['temp_min']}°F\n"  
     return weather_str
 
-
 def display_forecast(data):
     forecast_str = "Forecast:\n"
     previous_date = None
@@ -47,12 +46,10 @@ def display_forecast(data):
             forecast_str += "-" * 40 + "\n"
             previous_date = dt_txt_str
     return forecast_str
-def get_weather():
-    
-    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    weather_display.config(text=current_datetime)
 
+def get_weather():
+    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    weather_display.config(text=current_datetime)
     city = city_entry.get()
     if city:
         weather_data = fetch_weather(city)
@@ -62,11 +59,8 @@ def get_weather():
         messagebox.showinfo("Error", "Please enter a city")
 
 def get_weather_forecast():
-   
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
     weather_display.config(text=current_datetime)
-
     city = city_entry.get()
     if city:
         forecast_data = fetch_forecast(city)
@@ -74,7 +68,6 @@ def get_weather_forecast():
         weather_display.config(text=forecast_info)
     else:
         messagebox.showinfo("Error", "Please enter a city")
-
 
 window = tk.Tk()
 window.title("Weather App")
