@@ -24,8 +24,8 @@ def display_weather(data):
     weather_str += f"Humidity: {data['main']['humidity']}%\n"
     weather_str += f"Pressure: {data['main']['pressure']} hPa\n"
     weather_str += f"Wind Speed: {data['wind']['speed']} meter/sec\n"
-    weather_str += f"Max Temperature: {data['main']['temp_max']}°F\n"  # Added maximum temperature
-    weather_str += f"Min Temperature: {data['main']['temp_min']}°F\n"  # Added minimum temperature
+    weather_str += f"Max Temperature: {data['main']['temp_max']}°F\n"  
+    weather_str += f"Min Temperature: {data['main']['temp_min']}°F\n"  
     return weather_str
 
 
@@ -42,15 +42,15 @@ def display_forecast(data):
             forecast_str += f"Humidity: {forecast['main']['humidity']}%\n"
             forecast_str += f"Pressure: {forecast['main']['pressure']} hPa\n"
             forecast_str += f"Wind Speed: {forecast['wind']['speed']} meter/sec\n"
-            forecast_str += f"Max Temperature: {forecast['main']['temp_max']}°F\n"  # Added maximum temperature
-            forecast_str += f"Min Temperature: {forecast['main']['temp_min']}°F\n"  # Added minimum temperature
+            forecast_str += f"Max Temperature: {forecast['main']['temp_max']}°F\n"  
+            forecast_str += f"Min Temperature: {forecast['main']['temp_min']}°F\n"  
             forecast_str += "-" * 40 + "\n"
             previous_date = dt_txt_str
     return forecast_str
 def get_weather():
-    # Get current date and time
+    
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    # Update weather display with current date and time
+    
     weather_display.config(text=current_datetime)
 
     city = city_entry.get()
@@ -62,9 +62,9 @@ def get_weather():
         messagebox.showinfo("Error", "Please enter a city")
 
 def get_weather_forecast():
-    # Get current date and time
+   
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    # Update weather display with current date and time
+    
     weather_display.config(text=current_datetime)
 
     city = city_entry.get()
@@ -75,7 +75,7 @@ def get_weather_forecast():
     else:
         messagebox.showinfo("Error", "Please enter a city")
 
-# New UI enhancements using themes and styles
+
 window = tk.Tk()
 window.title("Weather App")
 window.style = ttk.Style()
@@ -93,10 +93,21 @@ city_entry.pack(side="left", padx=5)
 get_weather_button = ttk.Button(window, text="Get Weather", command=get_weather)
 get_weather_button.pack(pady=5)
 
-get_weather_forecast_button = ttk.Button(window, text="Get Weather Forecast", command=get_weather_forecast)
+def new_func1(get_weather_forecast, window):
+    get_weather_forecast_button = ttk.Button(window, text="Get Weather Forecast", command=get_weather_forecast)
+    return get_weather_forecast_button
+
+def new_func2(get_weather_forecast, window, new_func1):
+    get_weather_forecast_button = new_func1(get_weather_forecast, window)
+    return get_weather_forecast_button
+
+get_weather_forecast_button = new_func2(get_weather_forecast, window, new_func1)
 get_weather_forecast_button.pack(pady=5)
 
 weather_display = ttk.Label(window, text="", justify="left")
 weather_display.pack(pady=10)
 
-window.mainloop()
+def new_func(window):
+    window.mainloop()
+
+new_func(window)
