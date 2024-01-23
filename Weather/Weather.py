@@ -1,7 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import requests
-import matplotlib.pyplot as plt
+from datetime import datetime, timezone
 
 def fetch_weather(city):
     api_key = "0bdb263ccdd84296dc6a57e50fbcd336"  
@@ -24,66 +24,79 @@ def display_weather(data):
     weather_str += f"Humidity: {data['main']['humidity']}%\n"
     weather_str += f"Pressure: {data['main']['pressure']} hPa\n"
     weather_str += f"Wind Speed: {data['wind']['speed']} meter/sec\n"
+    weather_str += f"Max Temperature: {data['main']['temp_max']}°F\n"  # Added maximum temperature
+    weather_str += f"Min Temperature: {data['main']['temp_min']}°F\n"  # Added minimum temperature
     return weather_str
+
 
 def display_forecast(data):
     forecast_str = "Forecast:\n"
+    previous_date = None
     for forecast in data['list']:
-        forecast_str += f"\nDate: {forecast['dt_txt']}\n"
-        forecast_str += f"Temperature: {forecast['main']['temp']}°F\n"
-        forecast_str += f"Description: {forecast['weather'][0]['description']}\n"
-        forecast_str += f"Humidity: {forecast['main']['humidity']}%\n"
-        forecast_str += f"Pressure: {forecast['main']['pressure']} hPa\n"
-        forecast_str += f"Wind Speed: {forecast['wind']['speed']} meter/sec\n"
-        forecast_str += "-" * 40 + "\n"
+        dt_txt = datetime.fromtimestamp(forecast['dt'], tz=timezone.utc)
+        dt_txt_str = dt_txt.strftime('%Y-%m-%d')
+        if dt_txt_str != previous_date:
+            forecast_str += f"\nDate: {dt_txt_str}\n"
+            forecast_str += f"Temperature: {forecast['main']['temp']}°F\n"
+            forecast_str += f"Description: {forecast['weather'][0]['description']}\n"
+            forecast_str += f"Humidity: {forecast['main']['humidity']}%\n"
+            forecast_str += f"Pressure: {forecast['main']['pressure']} hPa\n"
+            forecast_str += f"Wind Speed: {forecast['wind']['speed']} meter/sec\n"
+            forecast_str += f"Max Temperature: {forecast['main']['temp_max']}°F\n"  # Added maximum temperature
+            forecast_str += f"Min Temperature: {forecast['main']['temp_min']}°F\n"  # Added minimum temperature
+            forecast_str += "-" * 40 + "\n"
+            previous_date = dt_txt_str
     return forecast_str
-
-def plot_weather_forecast(data):
-    dates = []
-    temps = []
-
-    for forecast in data['list']:
-        dates.append(forecast['dt_txt'])
-        temps.append(forecast['main']['temp'])
-
-    plt.plot(dates, temps)
-    plt.xlabel("Date")
-    plt.ylabel("Temperature (°F)")
-    plt.title(f"Weather Forecast")
-    plt.xticks(rotation=45)
-    plt.show()
-
 def get_weather():
-    city = city_combobox.get()
-    weather_data = fetch_weather(city)
-    weather_info = display_weather(weather_data)
-    weather_display.config(text=weather_info)
+    # Get current date and time
+    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Update weather display with current date and time
+    weather_display.config(text=current_datetime)
+
+    city = city_entry.get()
+    if city:
+        weather_data = fetch_weather(city)
+        weather_info = display_weather(weather_data)
+        weather_display.config(text=weather_info)
+    else:
+        messagebox.showinfo("Error", "Please enter a city")
 
 def get_weather_forecast():
-    city = city_combobox.get()
-    forecast_data = fetch_forecast(city)
-    forecast_info = display_forecast(forecast_data)
-    weather_display.config(text=forecast_info)
-    plot_weather_forecast(forecast_data)
+    # Get current date and time
+    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Update weather display with current date and time
+    weather_display.config(text=current_datetime)
 
+    city = city_entry.get()
+    if city:
+        forecast_data = fetch_forecast(city)
+        forecast_info = display_forecast(forecast_data)
+        weather_display.config(text=forecast_info)
+    else:
+        messagebox.showinfo("Error", "Please enter a city")
 
+# New UI enhancements using themes and styles
 window = tk.Tk()
 window.title("Weather App")
+window.style = ttk.Style()
+window.style.theme_use("clam")
 
-city_label = tk.Label(window, text="Select City:")
-city_label.pack()
+frame = ttk.Frame(window, padding=10)
+frame.pack()
 
-city_combobox = ttk.Combobox(window)
-city_combobox['values'] = ('London', 'New York', 'Paris', 'Tokyo', 'Istanbul', 'Izmir', 'Bali', 'Roma', 'Berlin', 'Hamburg', ) 
-city_combobox.pack()
+city_label = ttk.Label(frame, text="Enter City:")
+city_label.pack(side="left")
 
-get_weather_button = tk.Button(window, text="Get Weather", command=get_weather)
-get_weather_button.pack()
+city_entry = ttk.Entry(frame)
+city_entry.pack(side="left", padx=5)
 
-get_weather_forecast_button = tk.Button(window, text="Get Weather Forecast", command=get_weather_forecast)
-get_weather_forecast_button.pack()
+get_weather_button = ttk.Button(window, text="Get Weather", command=get_weather)
+get_weather_button.pack(pady=5)
 
-weather_display = tk.Label(window, text="")
-weather_display.pack()
+get_weather_forecast_button = ttk.Button(window, text="Get Weather Forecast", command=get_weather_forecast)
+get_weather_forecast_button.pack(pady=5)
+
+weather_display = ttk.Label(window, text="", justify="left")
+weather_display.pack(pady=10)
 
 window.mainloop()
